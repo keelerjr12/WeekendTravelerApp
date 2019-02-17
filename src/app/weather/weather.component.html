@@ -1,0 +1,19 @@
+<div class="container">
+  <form (ngSubmit)="onSubmit()">
+    <div>
+      <label>ZipCode:</label>
+      <input type="text" [formControl]="zipcode" />
+    </div>
+    <button type="submit">Submit</button>
+  </form>
+  <div *ngIf="show">
+    <label>Weather for: {{ forecast.getLocation() }}</label>
+    <div>
+      <ul>
+        <li *ngFor="let dataPoint of forecast.getDataPoints()">
+          {{ dataPoint.temp }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
