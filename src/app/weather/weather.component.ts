@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl } from "@angular/forms";
-import { WeatherForecastServiceComponent } from "../../api/weather-forecast-service/weather-forecast-service.component";
+import { WeatherForecastService } from "../../api/weather-forecast-service/weather-forecast.service";
 import { Forecast } from "../../api/weather-forecast-service/forecast";
 
 @Component({
@@ -15,7 +15,7 @@ export class WeatherComponent {
   private forecast: Forecast;
   errorMessage: string;
 
-  constructor(private forecastService: WeatherForecastServiceComponent) { }
+  constructor(private forecastService: WeatherForecastService) { }
 
   onSubmit() {
     let zipcode = this.zipcode.value;

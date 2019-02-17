@@ -6,7 +6,7 @@ import { Forecast } from "./forecast";
 import { IForecastDataPoint } from "./IForecastDataPoint";
 
 @Injectable()
-export class WeatherForecastServiceComponent {
+export class WeatherForecastService {
 
   constructor(private http: HttpClient) { }
 
@@ -21,12 +21,21 @@ export class WeatherForecastServiceComponent {
   }
 
   private parseResponse(res: any): Forecast {
-    let newDP = {
-      temp: res.list[0].main.temp
+    let dPs = new Array<IForecastDataPoint>();
+
+    for (let point of res.list) {
+      let newDP = {
+        date: new Date(Number(point.dt) * 1000).toLocaleDateString(),
+        time: new Date(Number(point.dt) * 1000).toLocaleTimeString(navigator.language,
+          {
+            hour: '2-digit',
+            minute: '2-digit'
+          }),
+        temp: Number(point.main.temp)
     };
 
-    let dPs = new Array<IForecastDataPoint>();
-    dPs.push(newDP);
+      dPs.push(newDP);
+    }
 
     return new Forecast(res.city.name, res.city.country, dPs);
   }

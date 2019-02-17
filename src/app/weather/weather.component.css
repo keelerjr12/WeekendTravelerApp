@@ -2,6 +2,25 @@
   display: flex;
 }
 
-  .container form {
-    width: 200px;
-  }
+.container form {
+  width: 200px;
+}
+
+.weather-container {
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.weather-data {
+  display: inline-block;
+  border-color: lightcyan;
+  border-style: solid;
+  border-width: thin;
+  margin: 1em;
+  padding: 1em;
+  min-width: 100px;
+}
+
+.weather-data label {
+  display: block;
+}

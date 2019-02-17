@@ -9,7 +9,10 @@ import { IsochroneMapComponent } from './isochrone-map/isochrone-map.component';
 import { AppRoutingModule } from "./app-routing.module";
 import { HomeComponent } from './home/home.component';
 import { WeatherComponent } from './weather/weather.component';
-import { WeatherForecastServiceComponent } from "../api/weather-forecast-service/weather-forecast-service.component";
+
+import { GeocodeService } from "../api/geocode-service/geocode.service";
+import { IsochroneService } from "../api/isochrone-service/isochrone.service";
+import { WeatherForecastService } from "../api/weather-forecast-service/weather-forecast.service";
 
 @NgModule({
   declarations: [
@@ -26,7 +29,9 @@ import { WeatherForecastServiceComponent } from "../api/weather-forecast-service
     AppRoutingModule
   ],
   providers: [
-    WeatherForecastServiceComponent
+    GeocodeService,
+    IsochroneService,
+    WeatherForecastService
   ],
   bootstrap: [AppComponent]
 })

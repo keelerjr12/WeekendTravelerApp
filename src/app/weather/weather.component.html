@@ -6,14 +6,12 @@
     </div>
     <button type="submit">Submit</button>
   </form>
-  <div *ngIf="show">
-    <label>Weather for: {{ forecast.getLocation() }}</label>
-    <div>
-      <ul>
-        <li *ngFor="let dataPoint of forecast.getDataPoints()">
-          {{ dataPoint.temp }}
-        </li>
-      </ul>
+  <div class="weather-container" *ngIf="show">
+    <h2>Weather for: {{ forecast.getLocation() }}</h2>
+    <div class="weather-data" *ngFor="let dataPoint of forecast.getDataPoints()">
+        <label>{{ dataPoint.date }}</label>
+        <label>{{ dataPoint.time }}</label>
+        <label>{{ dataPoint.temp }}</label>
     </div>
   </div>
 </div>
