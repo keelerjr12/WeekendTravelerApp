@@ -8,10 +8,23 @@
   </form>
   <div class="weather-container" *ngIf="show">
     <h2>Weather for: {{ forecast.getLocation() }}</h2>
-    <div class="weather-data" *ngFor="let dataPoint of forecast.getDataPoints()">
-        <label>{{ dataPoint.date }}</label>
-        <label>{{ dataPoint.time }}</label>
-        <label>{{ dataPoint.temp }}</label>
-    </div>
+    <table>
+      <thead>
+      <tr>
+        <td>Date</td>
+        <td>Time</td>
+        <td>Conditions</td>
+        <td>Temp.</td>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let dataPoint of forecast.getDataPoints()">
+        <td>{{ dataPoint.date }}</td>
+        <td>{{ dataPoint.time }}</td>
+        <td><img [src]="'http://openweathermap.org/img/w/' + dataPoint.icon" /></td>
+        <td>{{ dataPoint.temp }}</td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </div>

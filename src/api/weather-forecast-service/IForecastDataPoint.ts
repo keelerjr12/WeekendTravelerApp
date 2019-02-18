@@ -1,5 +1,6 @@
 export interface IForecastDataPoint {
   date: string;
   time: string;
-  temp: Number;
+  temp: number;
+  icon: string;
 }

@@ -5,3 +5,14 @@
 .container form {
   width: 200px;
 }
+
+.container textarea {
+  resize: none;
+  height: 3em;
+  width: 12em;
+}
+
+.container input {
+  width: 3em;
+}
+

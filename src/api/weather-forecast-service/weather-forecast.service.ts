@@ -31,9 +31,10 @@ export class WeatherForecastService {
             hour: '2-digit',
             minute: '2-digit'
           }),
-        temp: Number(point.main.temp)
+        temp: Number(point.main.temp.toFixed(0)),
+        icon: point.weather[0].icon + ".png"
     };
-
+      console.log(newDP);
       dPs.push(newDP);
     }
 

@@ -64,6 +64,8 @@ export class IsochroneMapComponent implements OnInit {
     return maxTime;
   }
 
+  private marker: google.maps.Marker;
+
   private createPolygon(coords: google.maps.LatLng[]): google.maps.Polygon {
     var poly = new google.maps.Polygon({
       paths: coords,
@@ -79,7 +81,12 @@ export class IsochroneMapComponent implements OnInit {
       event => {
         this.geocodeService.getLocationDataByLatLng(event.latLng).subscribe(
           location => {
-            var marker = new google.maps.Marker({
+
+            if (this.marker !== undefined) {
+              this.marker.setMap(null);
+            }
+
+            this.marker = new google.maps.Marker({
               position: location.coords,
               map: this.map,
             });
@@ -88,7 +95,7 @@ export class IsochroneMapComponent implements OnInit {
               {
                 content: "<h4>" + location.address +"</h4><p>" + location.coords.lat().toFixed(4) + ", " + location.coords.lng().toFixed(4) + "</p>"
               });
-            infoWindow.open(this.map, marker);
+            infoWindow.open(this.map, this.marker);
           });
       });
 
