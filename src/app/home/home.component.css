@@ -1,0 +1,59 @@
+#div-with-bg {
+  background-image: url('../../assets/background-mountain.jpg');
+  background-position: center;
+  height: 500px;
+  margin: 0;
+  padding: 0;
+}
+
+#div-with-bg h1 {
+  margin: 0;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif; 
+  font-variant: all-small-caps;
+  font-size: 8em;
+  color: white;
+  text-align: center;
+}
+
+#div-with-bg h4 {
+  margin: 0;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+  font-variant: all-small-caps;
+  font-size: 2em;
+  color: white;
+  text-align: center;
+}
+
+#div-with-bg p {
+  margin: 0;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif;
+  font-style: italic;
+  font-variant: all-small-caps;
+  font-size: 2em;
+  color: white;
+  text-align: center;
+}
+
+#main {
+  display: flex;
+}
+
+#main a {
+  text-decoration: none;
+}
+
+#main p {
+  font-style: normal;
+  font-size: 2em;
+}
+
+.col {
+  width: 50%;
+  height: 400px;
+  align-items: center;
+  text-align: center;
+}
+
+.col img {
+  width: 125px;
+}

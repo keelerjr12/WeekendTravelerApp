@@ -1,7 +1,27 @@
 .app-header {
   display: flex;
+  background-color: slategray;
 }
+
 .app-header h1 {
   display: inline;
   margin: 0;
+}
+
+.app-header nav a img {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.app-header nav a {
+  display: inline-block
+}
+
+.app-header a {
+  text-decoration: none;
+  font-family: Century Gothic,CenturyGothic,AppleGothic,sans-serif; 
+  font-variant: all-small-caps;
+  font-size: 2em;
+  color: white;
+  margin: .3em;
 }

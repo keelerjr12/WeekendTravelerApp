@@ -11,16 +11,12 @@ import { IsochroneService } from "../../api/isochrone-service/isochrone.service"
   styleUrls: ['./isochrone-map.component.css']
 })
 export class IsochroneMapComponent implements OnInit {
-  address = new FormControl('');
-  hours = new FormControl('');
-  mins = new FormControl('');
-
-  origin: google.maps.LatLng;
-
-  errorMessage: string;
+  private address = new FormControl('');
+  private hours = new FormControl('');
+  private mins = new FormControl('');
 
   @ViewChild('gmap') gmapElement: any;
-  map: google.maps.Map;
+  private map: google.maps.Map;
 
   constructor(private geocodeService: GeocodeService, private isochroneService: IsochroneService) { }
 
@@ -35,45 +31,67 @@ export class IsochroneMapComponent implements OnInit {
   }
 
   onSubmit() {
-    let address = this.address.value;
+    this.geocodeService.getLocationDataByAddress(this.address.value).subscribe(
+      location => {
+        this.renderOrigin(location.coords);
+        this.renderIsochrone(location.coords);
+      }
+    );
+  }
 
-    this.geocodeService.getLocationData(address).subscribe(
-      locationData => {
+  private renderOrigin(origin: google.maps.LatLng) {
+    this.map.setCenter(origin);
+    this.map.setZoom(8);
+    let marker = new google.maps.Marker({
+      position: origin,
+      map: this.map
+    });
+  }
 
-        this.origin = new google.maps.LatLng(locationData.getLat(), locationData.getLng());
-        this.map.setCenter(this.origin);
+  private renderIsochrone(origin: google.maps.LatLng) {
+    let maxTime = this.computeMaxTime();
 
-        let hours = this.hours.value;
-        let mins = this.mins.value;
-        let maxTime = (hours * 60) + mins;
-        this.isochroneService.generateIsochrone(locationData, maxTime).subscribe(
-          outCoords => {
+    this.isochroneService.generateIsochrone(origin, maxTime).subscribe(
+      outCoords => {
+        let isochronePoly = this.createPolygon(outCoords);
+        isochronePoly.setMap(this.map);
+      }
+    );
+  }
 
-            var isochronePoly = new google.maps.Polygon({
-              paths: outCoords,
-              strokeColor: '#FF0000',
-              strokeOpacity: 0.8,
-              strokeWeight: 2,
-              fillColor: '#FF0000',
-              fillOpacity: 0.35
+  private computeMaxTime(): number {
+    let maxTime = (this.hours.value * 60) + this.mins.value;
+    return maxTime;
+  }
+
+  private createPolygon(coords: google.maps.LatLng[]): google.maps.Polygon {
+    var poly = new google.maps.Polygon({
+      paths: coords,
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: '#FF0000',
+      fillOpacity: 0.35
+    });
+
+    google.maps.event.addListener(poly,
+      'click',
+      event => {
+        this.geocodeService.getLocationDataByLatLng(event.latLng).subscribe(
+          location => {
+            var marker = new google.maps.Marker({
+              position: location.coords,
+              map: this.map,
             });
 
-            google.maps.event.addListener(isochronePoly,
-              'click',
-              function (event) {
-                //service = new google.maps.places.PlacesService(map);
-                //infoWindow = new google.maps.InfoWindow();
-                var location = {
-                  lat: event.latLng.lat(),
-                  lng: event.latLng.lng()
-                };
-                console.log(location);
+            let infoWindow = new google.maps.InfoWindow(
+              {
+                content: "<h4>" + location.address +"</h4><p>" + location.coords.lat().toFixed(4) + ", " + location.coords.lng().toFixed(4) + "</p>"
               });
-
-            isochronePoly.setMap(this.map);
+            infoWindow.open(this.map, marker);
           });
-        });
-     // },
-      //error => this.errorMessage = <any>error);
+      });
+
+    return poly;
   }
 }

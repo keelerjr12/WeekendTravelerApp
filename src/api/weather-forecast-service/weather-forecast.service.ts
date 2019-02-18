@@ -21,10 +21,10 @@ export class WeatherForecastService {
   }
 
   private parseResponse(res: any): Forecast {
-    let dPs = new Array<IForecastDataPoint>();
+    let dPs: IForecastDataPoint[] = [];
 
     for (let point of res.list) {
-      let newDP = {
+      let newDP: IForecastDataPoint = {
         date: new Date(Number(point.dt) * 1000).toLocaleDateString(),
         time: new Date(Number(point.dt) * 1000).toLocaleTimeString(navigator.language,
           {

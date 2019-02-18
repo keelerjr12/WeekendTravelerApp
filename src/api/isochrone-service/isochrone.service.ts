@@ -1,27 +1,27 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, from } from 'rxjs';
 import { map } from 'rxjs/operators'
-import { LocationData } from "../geocode-service/LocationData";
 
 @Injectable()
 export class IsochroneService {
 
-  public generateIsochrone(origin: LocationData, maxTimeInMins: number): Observable<any> {
+  public generateIsochrone(origin: google.maps.LatLng, maxTimeInMins: number): Observable<any> {
     let eligibleCoords = this.computeEligibleCoords(origin, maxTimeInMins);
-    return from(this.getIsochrones(origin, eligibleCoords)).pipe(map(x => this.parseDistances(x, origin, maxTimeInMins, eligibleCoords)));
+
+    return from(this.getAllIsochroneData(origin, eligibleCoords)).pipe(map(data => this.createIsochroneFromData(data, origin, maxTimeInMins, eligibleCoords)));
   }
 
-  private parseDistances(result: any[], origin: LocationData, maxTimeInMins: number, eligibleCoords: any[]): any[] {
+  private createIsochroneFromData(data: any[], origin: google.maps.LatLng, maxTimeInMins: number, eligibleCoords: google.maps.LatLng[]): any[] {
     let validCoords = [];
 
-    for (let i = 0; i < result.length; i++) {
+    for (let i = 0; i < data.length; i++) {
       let maxI = 0;
       let maxJ = 0;
 
-      for (let j = 0; j < result[i]["resp"].rows[0].elements.length; j++) {
-        if (result[i]["resp"].rows[0].elements[j].status === 'OK') {
+      for (let j = 0; j < data[i]["resp"].rows[0].elements.length; j++) {
+        if (data[i]["resp"].rows[0].elements[j].status === 'OK') {
 
-          var travelTime = result[i]["resp"].rows[0].elements[j].duration.value / 60;
+          var travelTime = data[i]["resp"].rows[0].elements[j].duration.value / 60;
 
           if (travelTime <= (maxTimeInMins * 1.05)) {
             maxI = i;
@@ -35,8 +35,8 @@ export class IsochroneService {
     let polarCoordCoords = [];
 
     for (let i = 0; i < validCoords.length; i++) {
-      let lat = validCoords[i].lat - origin["lat"];
-      let lng = validCoords[i].lng - origin["lng"];
+      let lat = validCoords[i].lat - origin.lat();
+      let lng = validCoords[i].lng - origin.lng();
 
       let degs = Math.atan2(lng, lat);
 
@@ -65,37 +65,37 @@ export class IsochroneService {
     for (let i = 0; i < polarCoordCoords.length; i++) {
       outCoords.push(polarCoordCoords[i].coord);
     }
+
     return outCoords;
   }
 
-  private computeEligibleCoords(origin: LocationData, maxTimeInMinutes: number): any[] {
-      let speed = (60 / 60);
-      let maxDistance = maxTimeInMinutes * speed;
+  private computeEligibleCoords(origin: google.maps.LatLng, maxTimeInMinutes: number): google.maps.LatLng[] {
+    let speed = (60 / 60);
+    let maxDistance = maxTimeInMinutes * speed;
+    let distanceInterval = maxDistance / 12;
 
-      let eligibleCoords = [];
-      let distanceInterval = maxDistance / 12;
+    let maxNumberOfSlices = 8;
+    let sliceInterval = 360 / maxNumberOfSlices;
 
-      let maxNumberOfSlices = 8;
-      let sliceInterval = 360 / maxNumberOfSlices;
-      for(let slice = 0; slice< 360; slice += sliceInterval) {
-        let sliceOfCoords = [];
+    let eligibleCoords = [];
+    for(let slice = 0; slice< 360; slice += sliceInterval) {
+      let sliceOfCoords = [];
 
-        for (let distance = distanceInterval; distance <= maxDistance; distance += distanceInterval) {
-          let latDist = distance * Math.cos(slice * Math.PI / 180);
-          let longDist = distance * Math.sin(slice * Math.PI / 180);
+      for (let distance = distanceInterval; distance <= maxDistance; distance += distanceInterval) {
+        let latDist = distance * Math.cos(slice * Math.PI / 180);
+        let longDist = distance * Math.sin(slice * Math.PI / 180);
 
-          let lat = origin.getLat() + this.computeLatitudinalShiftByDistance(latDist);
-          let lng = origin.getLng() + this.computeLongitudinalShiftAtLatitudeByDistance(origin.getLat(), longDist);
+        let lat = origin.lat() + this.computeLatitudinalShiftByDistance(latDist);
+        let lng = origin.lng() + this.computeLongitudinalShiftAtLatitudeByDistance(origin.lat(), longDist);
 
-
-          let point = { distance, latDist, longDist, lat, lng };
-          sliceOfCoords.push(point);
-        }
-
-        eligibleCoords.push(sliceOfCoords);
+        let point = { distance, latDist, longDist, lat, lng };
+        sliceOfCoords.push(point);
       }
 
-      return eligibleCoords;
+      eligibleCoords.push(sliceOfCoords);
+    }
+
+    return eligibleCoords;
   }
 
   private computeLatitudinalShiftByDistance(dist: number): number {
@@ -107,20 +107,19 @@ export class IsochroneService {
     return dist / longRate;
   }
 
-  private getIsochrones(origin: any, coords: any[]) {
-    const promisedDistances = coords.map((points, index) => this.getDistance(origin, points, index));
-    // Promise.all turns an array of promises into a promise
-    // that resolves to an array.
-    return Promise.all(promisedDistances);
+  private getAllIsochroneData(origin: google.maps.LatLng, coords: any[]) {
+    const promisedData = coords.map((points, index) => this.getIsochroneData(origin, points, index));
+
+    return Promise.all(promisedData);
   }
 
-  private getDistance(origin: any, points: any[], index: number) {
+  private getIsochroneData(origin: google.maps.LatLng, points: any[], index: number) {
     const service = new google.maps.DistanceMatrixService();
 
     return new Promise((resolve, reject) => {
       service.getDistanceMatrix(
         {
-          origins: [origin],
+          origins: [new google.maps.LatLng(origin.lat(), origin.lng())],
           destinations: points,
           travelMode: google.maps.TravelMode.DRIVING,
           unitSystem: google.maps.UnitSystem.IMPERIAL
