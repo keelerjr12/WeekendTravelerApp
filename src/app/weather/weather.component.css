@@ -24,3 +24,8 @@
 .weather-data label {
   display: block;
 }
+
+.wx-desc {
+  display: flex;
+  align-items: center;
+}

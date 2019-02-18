@@ -23,21 +23,6 @@ export class WeatherComponent {
     this.forecastService.getForecast(zipcode).subscribe(
       forecast => {
         this.forecast = forecast;
-        console.log(forecast.getLocation());
-        console.log(forecast.getDataPoints());
-        /*let parser = new DOMParser();
-        let xmldoc = parser.parseFromString(resp, "text/xml");
-
-        console.log(xmldoc);
-
-        this.location = xmldoc.getElementsByTagName("name")[0].innerHTML;
-
-        this.data = [
-          "test1",
-          "test2",
-          "test3"
-      ];*/
-
         this.show = true;
       });
   }

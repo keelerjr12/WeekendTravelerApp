@@ -1,7 +1,7 @@
 <div class="container">
   <form (ngSubmit)="onSubmit()">
     <div>
-      <label>ZipCode:</label>
+      <label>ZIP Code:</label>
       <input type="text" [formControl]="zipcode" />
     </div>
     <button type="submit">Submit</button>
@@ -21,8 +21,13 @@
       <tr *ngFor="let dataPoint of forecast.getDataPoints()">
         <td>{{ dataPoint.date }}</td>
         <td>{{ dataPoint.time }}</td>
-        <td><img [src]="'http://openweathermap.org/img/w/' + dataPoint.icon" /></td>
-        <td>{{ dataPoint.temp }}</td>
+        <td>
+          <div class="wx-desc">
+            <img [src]="'http://openweathermap.org/img/w/' + dataPoint.icon" />
+            <label>{{ dataPoint.description }}</label>
+          </div>
+        </td>
+        <td>{{ dataPoint.temp }}&#8457;</td>
       </tr>
       </tbody>
     </table>

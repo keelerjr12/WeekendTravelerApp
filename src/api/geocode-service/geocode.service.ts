@@ -9,36 +9,38 @@ export class GeocodeService {
 
   constructor(private http: HttpClient) { }
 
-  /*getLocationData(address: string): Observable<LocationData> {
-    /*let weatherUrl = "https://api.openweathermap.org/data/2.5/forecast?zip=" + zipcode + "&units=imperial&mode=xml&appid=da6afaf045143ba75149312b1e70efc1";
-    return this.http.get<Forecast>(weatherUrl, { responseType: 'text' }).subscribe(data => {
-      console.log('testtest');
-      console.log(data);
-    });
-    let weatherUrl = "https://api.openweathermap.org/data/2.5/forecast?zip=" + zipcode + "&units=imperial&mode=json&appid=da6afaf045143ba75149312b1e70efc1";
-    return this.http.get<LocationData>(weatherUrl).pipe(map((res: any) => this.parseResponse(res)));
-    
-    let latLngUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${" + address + "}&key=AIzaSyAKURpa8WrRHysyqCF5vGJrPOuI6G_hx80";
-    return this.http.get<LocationData>(latLngUrl).pipe(map((response: any) => this.parseResponse(response)));
-  }
-  */
-
   public getLocationDataByAddress(address: string): Observable<ILocationData> {
     let addressUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${" + address + "}&key=AIzaSyAKURpa8WrRHysyqCF5vGJrPOuI6G_hx80";
-    return this.http.get<ILocationData>(addressUrl).pipe(map((response: any) => this.parseResponse(response)));
+    return this.http.get<ILocationData>(addressUrl).pipe(map((response: any) => this.parseJSONResponse(response)));
   }
 
   public getLocationDataByLatLng(point: google.maps.LatLng): Observable<ILocationData> {
-    let latLngUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + point.lat() + "," + point.lng() + "&key=AIzaSyAKURpa8WrRHysyqCF5vGJrPOuI6G_hx80";
-    return this.http.get<ILocationData>(latLngUrl).pipe(map((response: any) => this.parseResponse(response)));
+    let latLngUrl = "https://maps.googleapis.com/maps/api/geocode/xml?latlng=" + point.lat() + "," + point.lng() + "&key=AIzaSyAKURpa8WrRHysyqCF5vGJrPOuI6G_hx80";
+    return this.http.get(latLngUrl, {responseType: "text"}).pipe(map((response: any) => this.parseXMLResponse(response)));
   }
 
-  private parseResponse(response: any): ILocationData {
+  private parseJSONResponse(response: any): ILocationData {
     let lat = response.results[0].geometry.location.lat;
     let lng = response.results[0].geometry.location.lng;
 
     let locData: ILocationData = {
       address: response.results[0]["formatted_address"],
+      coords: new google.maps.LatLng(lat, lng)
+    };
+
+    return locData;
+  }
+
+  private parseXMLResponse(response: any): ILocationData {
+    let parser = new DOMParser();
+    let xmldoc = parser.parseFromString(response, "text/xml");
+
+    let lat = Number(xmldoc.getElementsByTagName("location")[0].getElementsByTagName("lat")[0].innerHTML);
+    let lng = Number(xmldoc.getElementsByTagName("location")[0].getElementsByTagName("lng")[0].innerHTML);
+    let address = xmldoc.getElementsByTagName("formatted_address")[0].innerHTML;
+
+    let locData: ILocationData = {
+      address: address,
       coords: new google.maps.LatLng(lat, lng)
     };
 

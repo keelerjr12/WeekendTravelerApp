@@ -11,11 +11,6 @@ export class WeatherForecastService {
   constructor(private http: HttpClient) { }
 
   getForecast(zipcode: string): Observable<Forecast> {
-    /*let weatherUrl = "https://api.openweathermap.org/data/2.5/forecast?zip=" + zipcode + "&units=imperial&mode=xml&appid=da6afaf045143ba75149312b1e70efc1";
-    return this.http.get<Forecast>(weatherUrl, { responseType: 'text' }).subscribe(data => {
-      console.log('testtest');
-      console.log(data);
-    });*/
     let weatherUrl = "https://api.openweathermap.org/data/2.5/forecast?zip=" + zipcode + "&units=imperial&mode=json&appid=da6afaf045143ba75149312b1e70efc1";
     return this.http.get<Forecast>(weatherUrl).pipe(map((res: any) => this.parseResponse(res)));
   }
@@ -32,6 +27,7 @@ export class WeatherForecastService {
             minute: '2-digit'
           }),
         temp: Number(point.main.temp.toFixed(0)),
+        description: point.weather[0].description,
         icon: point.weather[0].icon + ".png"
     };
       console.log(newDP);
