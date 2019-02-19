@@ -3,9 +3,11 @@
     "",
     "\\src",
     "\\src\\api",
-    "\\src\\api\\products",
-    "\\src\\app"
+    "\\src\\api\\geocode-service",
+    "\\src\\api\\weather-forecast-service",
+    "\\src\\app",
+    "\\src\\app\\isochrone-map"
   ],
-  "SelectedNode": "\\src\\app\\app.component.ts",
+  "SelectedNode": "\\src\\app\\isochrone-map\\isochrone-map.component.ts",
   "PreviewInSolutionExplorer": false
 }

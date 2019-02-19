@@ -134,19 +134,4 @@ export class IsochroneService {
       );
     });
   }
-
-  /*
-  private printDebuggingMarkers(eligibleCoords: any[]) {
-    for (let slice of eligibleCoords) {
-      for (let point of slice) {
-        let lat = point.lat;
-        let lng = point.lng;
-
-        var marker = new google.maps.Marker({
-          position: { lat, lng },
-          map: this.map
-        });
-      }
-    }
-  }*/
 }
